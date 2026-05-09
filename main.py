@@ -2,6 +2,7 @@ import pygame
 
 from src.runner.background import Background
 from src.runner.constants import FPS, WINDOW_HEIGHT, WINDOW_WIDTH
+from src.runner.obstacle import Obstacle
 from src.runner.player import Player
 
 
@@ -9,12 +10,13 @@ def main() -> None:
     pygame.init()
 
     screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-    pygame.display.set_caption("Player test")
+    pygame.display.set_caption("Obstacle test")
 
     clock = pygame.time.Clock()
 
     background = Background()
     player = Player()
+    obstacle = Obstacle()
 
     running = True
 
@@ -29,8 +31,13 @@ def main() -> None:
 
         background.update()
         player.update()
+        obstacle.update()
+
+        if player.get_hitbox().colliderect(obstacle.get_hitbox()):
+            print("Collision with obstacle")
 
         background.draw(screen)
+        obstacle.draw(screen)
         player.draw(screen)
 
         pygame.display.update()
