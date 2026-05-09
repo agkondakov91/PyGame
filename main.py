@@ -4,18 +4,20 @@ from src.runner.background import Background
 from src.runner.constants import FPS, WINDOW_HEIGHT, WINDOW_WIDTH
 from src.runner.obstacle import Obstacle
 from src.runner.player import Player
+from src.runner.coin import Coin
 
 
 def main() -> None:
     pygame.init()
 
     screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-    pygame.display.set_caption("Obstacle test")
+    pygame.display.set_caption('Obstacle test')
 
     clock = pygame.time.Clock()
 
     background = Background()
     player = Player()
+    coin = Coin()
     obstacle = Obstacle()
 
     running = True
@@ -31,13 +33,17 @@ def main() -> None:
 
         background.update()
         player.update()
+        coin.update()
         obstacle.update()
 
         if player.get_hitbox().colliderect(obstacle.get_hitbox()):
-            print("Collision with obstacle")
+            print('Collision with obstacle')
+        if player.get_hitbox().colliderect(coin.get_hitbox()):
+            print('Get coin')
 
         background.draw(screen)
         obstacle.draw(screen)
+        coin.draw(screen)
         player.draw(screen)
 
         pygame.display.update()
@@ -46,5 +52,5 @@ def main() -> None:
     pygame.quit()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
