@@ -11,6 +11,7 @@ class Coin:
         self.rect = self.image.get_rect()
         self.reset()
 
+
     def reset(self) -> None:
         self.rect.left = const.WINDOW_WIDTH + random.randint(
             const.COIN_MAX_DISTANCE,
@@ -18,13 +19,16 @@ class Coin:
         )
         self.rect.y = random.randint(const.COIN_MIN_HEIGHT, const.COIN_MAX_HEIGHT)
 
+
     def update(self) -> None:
         self.rect.x -= const.COIN_SPEED
         if self.rect.right < 0:
             self.reset()
 
+
     def draw(self, screen: pygame.Surface) -> None:
         screen.blit(self.image, self.rect)
+
 
     def get_hitbox(self) -> pygame.Rect:
         return self.rect.inflate(*const.COIN_HITBOX_INFLATE)

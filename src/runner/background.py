@@ -8,10 +8,12 @@ class Background:
         self.image = load_background('background.png')
         self.x = 0
 
+
     def update(self) -> None:
         self.x -= BACKGROUND_SPEED
         if self.x < -WINDOW_WIDTH:
             self.x = 0
+
 
     def draw(self, screen: pygame.Surface) -> None:
         screen.blit(self.image, (self.x, 0))
