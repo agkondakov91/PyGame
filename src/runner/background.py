@@ -11,6 +11,7 @@ class Background:
 
     def update(self) -> None:
         self.x -= BACKGROUND_SPEED
+
         if self.x < -WINDOW_WIDTH:
             self.x = 0
 

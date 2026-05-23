@@ -8,12 +8,15 @@ IMAGES_DIR = BASE_DIR / 'assets' / 'images'
 
 def load_image(file_name: str, scale: int = 1) -> pygame.Surface:
     image = pygame.image.load(IMAGES_DIR / file_name).convert_alpha()
+
     if scale == 1:
         return image
+
     new_size = (
         image.get_width() * scale,
         image.get_height() * scale
     )
+
     return pygame.transform.scale(image, new_size)
 
 

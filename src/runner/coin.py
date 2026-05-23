@@ -22,6 +22,7 @@ class Coin:
 
     def update(self) -> None:
         self.rect.x -= const.COIN_SPEED
+
         if self.rect.right < 0:
             self.reset()
 

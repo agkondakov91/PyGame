@@ -22,6 +22,7 @@ class Obstacle:
 
     def update(self) -> None:
         self.rect.x -= const.OBSTACLE_SPEED
+
         if self.rect.right < 0:
             self.reset()
 
