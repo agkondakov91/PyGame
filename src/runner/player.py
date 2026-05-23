@@ -17,12 +17,14 @@ class Player:
         self.is_jumping = False
         self.vertical_speed = 0
 
+
     def load_images(self) -> list[pygame.Surface]:
         file_names = [
             f'player_right_{number}.png'
             for number in range(1, const.ANIMATION_FRAMES_COUNT + 1)
         ]
         return load_animation(file_names, const.PLAYER_SCALE)
+
 
     def handle_input(self) -> None:
         keys = pygame.key.get_pressed()
@@ -35,10 +37,12 @@ class Player:
         if self.rect.x > self.max_player_x:
             self.rect.x = self.max_player_x
 
+
     def jump(self) -> None:
         if not self.is_jumping:
             self.vertical_speed += const.JUMP_SPEED
             self.is_jumping = True
+
 
     def update_gravity(self) -> None:
         self.vertical_speed += const.GRAVITY
@@ -48,22 +52,27 @@ class Player:
             self.vertical_speed = 0
             self.is_jumping = False
 
+
     def update_animation(self) -> None:
         self.animation_index += const.ANIMATION_SPEED
         if self.animation_index >= len(self.images):
             self.animation_index = 0
         self.image = self.images[int(self.animation_index)]
 
+
     def update(self) -> None:
         self.handle_input()
         self.update_gravity()
         self.update_animation()
 
+
     def draw(self, screen: pygame.Surface) -> None:
         screen.blit(self.image, self.rect)
 
+
     def get_hitbox(self) -> pygame.Rect:
         return self.rect.inflate(*const.PLAYER_HITBOX_INFLATE)
+
 
     def reset(self) -> None:
         self.rect.bottomleft = (self.start_x, const.GROUND_Y)
