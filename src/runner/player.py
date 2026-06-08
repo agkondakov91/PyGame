@@ -3,7 +3,6 @@ import pygame
 from src.runner.assets import load_animation
 import src.runner.constants as const
 
-
 class Player:
     def __init__(self) -> None:
         self.images = self.load_images()
@@ -43,10 +42,12 @@ class Player:
             self.rect.x = self.max_player_x
 
 
-    def jump(self) -> None:
-        if not self.is_jumping:
-            self.vertical_speed += const.JUMP_SPEED
-            self.is_jumping = True
+    def jump(self) -> bool:
+        if self.is_jumping:
+            return False
+        self.vertical_speed += const.JUMP_SPEED
+        self.is_jumping = True
+        return True
 
 
     def update_gravity(self) -> None:
