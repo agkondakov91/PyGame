@@ -12,6 +12,7 @@ from src.runner.constants import (
 )
 from src.runner.obstacle import Obstacle
 from src.runner.player import Player
+from src.runner.sound import SoundManager
 
 
 class Game:
@@ -30,6 +31,9 @@ class Game:
         self.player = Player()
         self.obstacle = Obstacle()
         self.coin = Coin()
+
+        self.sounds = SoundManager()
+        self.sounds.play_music()
 
         self.score = 0
         self.state = STATE_MENU
@@ -67,7 +71,8 @@ class Game:
 
         elif self.state == STATE_PLAYING:
             if key in (pygame.K_UP, pygame.K_w, pygame.K_SPACE):
-                self.player.jump()
+                if self.player.jump():
+                    self.sounds.play_jump()
 
         elif self.state == STATE_GAME_OVER:
             if key == pygame.K_r:
@@ -92,9 +97,11 @@ class Game:
         coin_hitbox = self.coin.get_hitbox()
 
         if player_hitbox.colliderect(obstacle_hitbox):
+            self.sounds.play_hit()
             self.state = STATE_GAME_OVER
         if player_hitbox.colliderect(coin_hitbox):
             self.score += 1
+            self.sounds.play_coin()
             self.coin.reset()
 
     def draw_menu(self) -> None:
