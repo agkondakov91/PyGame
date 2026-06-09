@@ -20,8 +20,8 @@ class Obstacle:
         self.rect.bottom = const.GROUND_Y + 10
 
 
-    def update(self) -> None:
-        self.rect.x -= const.OBSTACLE_SPEED
+    def update(self, speed_multiplier: float = 1.0) -> None:
+        self.rect.x -= int(const.OBSTACLE_SPEED * speed_multiplier)
 
         if self.rect.right < 0:
             self.reset()

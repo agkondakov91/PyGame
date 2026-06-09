@@ -9,10 +9,10 @@ class Background:
         self.x = 0
 
 
-    def update(self) -> None:
-        self.x -= BACKGROUND_SPEED
+    def update(self, speed_multiplier: float = 1.0) -> None:
+        self.x -= BACKGROUND_SPEED * speed_multiplier
 
-        if self.x < -WINDOW_WIDTH:
+        if self.x <= -WINDOW_WIDTH:
             self.x = 0
 
 

@@ -20,8 +20,8 @@ class Coin:
         self.rect.y = random.randint(const.COIN_MIN_HEIGHT, const.COIN_MAX_HEIGHT)
 
 
-    def update(self) -> None:
-        self.rect.x -= const.COIN_SPEED
+    def update(self, speed_multiplier: float = 1.0) -> None:
+        self.rect.x -= int(const.COIN_SPEED * speed_multiplier)
 
         if self.rect.right < 0:
             self.reset()
