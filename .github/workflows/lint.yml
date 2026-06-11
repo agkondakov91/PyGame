@@ -1,0 +1,30 @@
+name: Lint
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main, dev]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+
+      - name: Set up Python
+        uses: uv python install
+
+      - name: Install dependencies
+        uses: uv sync --dev
+
+      - name: Run Ruff check
+        uses: uv run ruff check .
+
+      - name: Run Ruff format check
+        uses: uv run ruff format --check .
