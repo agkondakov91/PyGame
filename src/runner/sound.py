@@ -5,15 +5,15 @@ from src.runner.assets import SOUNDS_DIR
 
 class SoundManager:
     def __init__(self) -> None:
-        self.jump_sound = pygame.mixer.Sound(SOUNDS_DIR / 'jump.mp3')
-        self.coin_sound = pygame.mixer.Sound(SOUNDS_DIR / 'coin.mp3')
-        self.hit_sound = pygame.mixer.Sound(SOUNDS_DIR / 'hit.mp3')
+        self.jump_sound = pygame.mixer.Sound(SOUNDS_DIR / "jump.mp3")
+        self.coin_sound = pygame.mixer.Sound(SOUNDS_DIR / "coin.mp3")
+        self.hit_sound = pygame.mixer.Sound(SOUNDS_DIR / "hit.mp3")
 
         self.jump_sound.set_volume(0.5)
         self.coin_sound.set_volume(0.5)
         self.hit_sound.set_volume(0.5)
 
-        self.music_path = SOUNDS_DIR / 'music.mp3'
+        self.music_path = SOUNDS_DIR / "music.mp3"
 
     def play_jump(self) -> None:
         self.jump_sound.play()
