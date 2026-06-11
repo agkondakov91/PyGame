@@ -1,18 +1,15 @@
-from shutil import which
-
 import pygame
 
-from src.runner.coin import Coin
 from src.runner.background import Background
 from src.runner.coin import Coin
 from src.runner.constants import (
     FPS,
-    WINDOW_WIDTH,
-    WINDOW_HEIGHT,
     STATE_GAME_OVER,
     STATE_MENU,
+    STATE_PAUSE,
     STATE_PLAYING,
-    STATE_PAUSE
+    WINDOW_HEIGHT,
+    WINDOW_WIDTH,
 )
 from src.runner.obstacle import Obstacle
 from src.runner.player import Player
@@ -24,7 +21,7 @@ class Game:
         pygame.init()
 
         self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-        pygame.display.set_caption('PyGame: Runner')
+        pygame.display.set_caption("PyGame: Runner")
 
         self.clock = pygame.time.Clock()
 
@@ -46,7 +43,6 @@ class Game:
         self.state = STATE_MENU
         self.running = True
 
-
     def run(self) -> None:
         while self.running:
             self.handle_events()
@@ -60,7 +56,6 @@ class Game:
 
         pygame.quit()
 
-
     def handle_events(self) -> None:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -68,7 +63,6 @@ class Game:
 
             if event.type == pygame.KEYDOWN:
                 self.handle_keydown(event.key)
-
 
     def handle_keydown(self, key: int) -> None:
         if self.state == STATE_MENU:
@@ -95,7 +89,6 @@ class Game:
             if key == pygame.K_ESCAPE:
                 self.state = STATE_MENU
 
-
     def update(self) -> None:
         self.speed_multiplier += 0.0002
         self.background.update(self.speed_multiplier)
@@ -106,11 +99,9 @@ class Game:
             coin.update(self.speed_multiplier)
         self.check_collisions()
 
-
     def update_best_score(self) -> None:
         if self.score > self.best_score:
             self.best_score = self.score
-
 
     def check_collisions(self) -> None:
         player_hitbox = self.player.get_hitbox()
@@ -127,26 +118,25 @@ class Game:
                 self.sounds.play_coin()
                 coin.reset()
 
-
     def draw_menu(self) -> None:
-        title_text = self.font.render('Runner Game', True, 'white')
+        title_text = self.font.render("Runner Game", True, "white")
         title_rect = title_text.get_rect(
             center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 - 80),
         )
 
         start_text = self.small_font.render(
-            'Press Enter or Space to start',
+            "Press Enter or Space to start",
             True,
-            'white',
+            "white",
         )
         start_rect = start_text.get_rect(
             center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2),
         )
 
         controls_text = self.small_font.render(
-            'Move: A/D or Arrows    Jump: W/Up/Space',
+            "Move: A/D or Arrows    Jump: W/Up/Space",
             True,
-            'white',
+            "white",
         )
         controls_rect = controls_text.get_rect(
             center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 + 50),
@@ -156,19 +146,17 @@ class Game:
         self.screen.blit(start_text, start_rect)
         self.screen.blit(controls_text, controls_rect)
 
-
     def draw_pause(self) -> None:
-        pause_text = self.font.render('Pause', True, 'white')
+        pause_text = self.font.render("Pause", True, "white")
         pause_rect = pause_text.get_rect(
             center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 - 30)
         )
-        continue_text = self.small_font.render('Press P to continue', True, 'white')
+        continue_text = self.small_font.render("Press P to continue", True, "white")
         continue_rect = continue_text.get_rect(
             center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 + 30)
         )
         self.screen.blit(pause_text, pause_rect)
         self.screen.blit(continue_text, continue_rect)
-
 
     def draw(self) -> None:
         self.background.draw(self.screen)
@@ -192,47 +180,43 @@ class Game:
         if self.state == STATE_GAME_OVER:
             self.draw_game_over()
 
-
     def draw_score(self) -> None:
-        score_text = self.small_font.render(f'Score: {self.score}', True, 'white')
-        best_text = self.small_font.render(f'Best: {self.best_score}', True, 'white')
+        score_text = self.small_font.render(f"Score: {self.score}", True, "white")
+        best_text = self.small_font.render(f"Best: {self.best_score}", True, "white")
         speed_text = self.small_font.render(
-            f'Speed: {self.speed_multiplier:.1f}', True, 'white'
+            f"Speed: {self.speed_multiplier:.1f}", True, "white"
         )
 
         self.screen.blit(score_text, (20, 20))
         self.screen.blit(best_text, (20, 50))
         self.screen.blit(speed_text, (20, 80))
 
-
     def draw_game_over(self) -> None:
-        game_over_text = self.font.render('Game Over', True, 'white')
+        game_over_text = self.font.render("Game Over", True, "white")
         game_over_rect = game_over_text.get_rect(
             center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 - 80),
         )
 
-        score_text = self.small_font.render(
-            f'Final score: {self.score}', True, 'white'
-        )
+        score_text = self.small_font.render(f"Final score: {self.score}", True, "white")
         score_rect = score_text.get_rect(
             center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 - 20),
         )
 
         best_text = self.small_font.render(
-            f'Best score: {self.best_score}',
+            f"Best score: {self.best_score}",
             True,
-            'white',
+            "white",
         )
         best_rect = best_text.get_rect(
             center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 + 20),
         )
 
-        restart_text = self.small_font.render('Press R to restart', True, 'white')
+        restart_text = self.small_font.render("Press R to restart", True, "white")
         restart_rect = restart_text.get_rect(
             center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 + 70),
         )
 
-        menu_text = self.small_font.render('Press Esc to menu', True, 'white')
+        menu_text = self.small_font.render("Press Esc to menu", True, "white")
         menu_rect = menu_text.get_rect(
             center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 + 115),
         )
@@ -242,7 +226,6 @@ class Game:
         self.screen.blit(best_text, best_rect)
         self.screen.blit(restart_text, restart_rect)
         self.screen.blit(menu_text, menu_rect)
-
 
     def reset(self) -> None:
         self.speed_multiplier = 1.0

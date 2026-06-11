@@ -7,3 +7,16 @@ requires-python = ">=3.13"
 dependencies = [
     "pygame>=2.6.1",
 ]
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.6.0",
+    "ruff>=0.15.17",
+]
+
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "N", "I"]
+ignore = ["E501"]
