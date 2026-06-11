@@ -3,7 +3,11 @@ import pygame
 from src.runner.background import Background
 from src.runner.coin import Coin
 from src.runner.constants import (
+    COIN_SPAWN_MAX_GAP,
+    COIN_SPAWN_MIN_GAP,
     FPS,
+    OBSTACLE_SPAWN_MAX_GAP,
+    OBSTACLE_SPAWN_MIN_GAP,
     STATE_GAME_OVER,
     STATE_MENU,
     STATE_PAUSE,
@@ -14,6 +18,7 @@ from src.runner.constants import (
 from src.runner.obstacle import Obstacle
 from src.runner.player import Player
 from src.runner.sound import SoundManager
+from src.runner.spawn import SpawnManager
 
 
 class Game:
@@ -32,8 +37,17 @@ class Game:
 
         self.background = Background()
         self.player = Player()
-        self.obstacles = [Obstacle()]
-        self.coins = [Coin()]
+        self.obstacles = [Obstacle(), Obstacle()]
+        self.coins = [Coin(), Coin(), Coin()]
+
+        self.obstacle_spawn_manager = SpawnManager(
+            OBSTACLE_SPAWN_MIN_GAP,
+            OBSTACLE_SPAWN_MAX_GAP,
+        )
+        self.coin_spawn_manager = SpawnManager(
+            COIN_SPAWN_MIN_GAP,
+            COIN_SPAWN_MAX_GAP,
+        )
 
         self.sounds = SoundManager()
         self.sounds.play_music()
@@ -89,14 +103,26 @@ class Game:
             if key == pygame.K_ESCAPE:
                 self.state = STATE_MENU
 
+    def arrange_objects(self) -> None:
+        self.obstacle_spawn_manager.reset()
+        self.coin_spawn_manager.reset()
+        for obstacle in self.obstacles:
+            obstacle.reset(self.obstacle_spawn_manager.get_next_x())
+        for coin in self.coins:
+            coin.reset(self.coin_spawn_manager.get_next_x())
+
     def update(self) -> None:
-        self.speed_multiplier += 0.0002
+        self.speed_multiplier += 0.0003
         self.background.update(self.speed_multiplier)
         self.player.update()
         for obstacle in self.obstacles:
             obstacle.update(self.speed_multiplier)
+            if obstacle.is_outside_screen():
+                obstacle.reset(self.obstacle_spawn_manager.get_next_x())
         for coin in self.coins:
             coin.update(self.speed_multiplier)
+            if coin.is_outside_screen():
+                coin.reset(self.coin_spawn_manager.get_next_x())
         self.check_collisions()
 
     def update_best_score(self) -> None:
@@ -116,7 +142,7 @@ class Game:
             if player_hitbox.colliderect(coin.get_hitbox()):
                 self.score += 1
                 self.sounds.play_coin()
-                coin.reset()
+                coin.reset(self.coin_spawn_manager.get_next_x())
 
     def draw_menu(self) -> None:
         title_text = self.font.render("Runner Game", True, "white")
@@ -228,11 +254,7 @@ class Game:
         self.screen.blit(menu_text, menu_rect)
 
     def reset(self) -> None:
-        self.speed_multiplier = 1.0
         self.player.reset()
-        for obstacle in self.obstacles:
-            obstacle.reset()
-        for coin in self.coins:
-            coin.reset()
+        self.arrange_objects()
         self.score = 0
-        self.state = STATE_PLAYING
+        self.speed_multiplier = 1.0
