@@ -1,13 +1,8 @@
 import pygame
 
 from src.runner.background import Background
-from src.runner.coin import Coin
 from src.runner.constants import (
-    COIN_SPAWN_MAX_GAP,
-    COIN_SPAWN_MIN_GAP,
     FPS,
-    OBSTACLE_SPAWN_MAX_GAP,
-    OBSTACLE_SPAWN_MIN_GAP,
     STATE_GAME_OVER,
     STATE_MENU,
     STATE_PAUSE,
@@ -15,10 +10,10 @@ from src.runner.constants import (
     WINDOW_HEIGHT,
     WINDOW_WIDTH,
 )
-from src.runner.obstacle import Obstacle
+from src.runner.managers.coin_manager import CoinManager
+from src.runner.managers.obstacle_manager import ObstacleManager
 from src.runner.player import Player
 from src.runner.sound import SoundManager
-from src.runner.spawn import SpawnManager
 
 
 class Game:
@@ -37,17 +32,9 @@ class Game:
 
         self.background = Background()
         self.player = Player()
-        self.obstacles = [Obstacle(), Obstacle()]
-        self.coins = [Coin(), Coin(), Coin()]
 
-        self.obstacle_spawn_manager = SpawnManager(
-            OBSTACLE_SPAWN_MIN_GAP,
-            OBSTACLE_SPAWN_MAX_GAP,
-        )
-        self.coin_spawn_manager = SpawnManager(
-            COIN_SPAWN_MIN_GAP,
-            COIN_SPAWN_MAX_GAP,
-        )
+        self.obstacle_manager = ObstacleManager(count=5)
+        self.coin_manager = CoinManager(count=3)
 
         self.sounds = SoundManager()
         self.sounds.play_music()
@@ -103,26 +90,12 @@ class Game:
             if key == pygame.K_ESCAPE:
                 self.state = STATE_MENU
 
-    def arrange_objects(self) -> None:
-        self.obstacle_spawn_manager.reset()
-        self.coin_spawn_manager.reset()
-        for obstacle in self.obstacles:
-            obstacle.reset(self.obstacle_spawn_manager.get_next_x())
-        for coin in self.coins:
-            coin.reset(self.coin_spawn_manager.get_next_x())
-
     def update(self) -> None:
         self.speed_multiplier += 0.0003
         self.background.update(self.speed_multiplier)
         self.player.update()
-        for obstacle in self.obstacles:
-            obstacle.update(self.speed_multiplier)
-            if obstacle.is_outside_screen():
-                obstacle.reset(self.obstacle_spawn_manager.get_next_x())
-        for coin in self.coins:
-            coin.update(self.speed_multiplier)
-            if coin.is_outside_screen():
-                coin.reset(self.coin_spawn_manager.get_next_x())
+        self.obstacle_manager.update(self.speed_multiplier)
+        self.coin_manager.update(self.speed_multiplier)
         self.check_collisions()
 
     def update_best_score(self) -> None:
@@ -131,18 +104,15 @@ class Game:
 
     def check_collisions(self) -> None:
         player_hitbox = self.player.get_hitbox()
-        for obstacle in self.obstacles:
-            if player_hitbox.colliderect(obstacle.get_hitbox()):
-                self.sounds.play_hit()
-                self.update_best_score()
-                self.state = STATE_GAME_OVER
-                return
-
-        for coin in self.coins:
-            if player_hitbox.colliderect(coin.get_hitbox()):
-                self.score += 1
-                self.sounds.play_coin()
-                coin.reset(self.coin_spawn_manager.get_next_x())
+        if self.obstacle_manager.has_collision_with(player_hitbox):
+            self.sounds.play_hit()
+            self.update_best_score()
+            self.state = STATE_GAME_OVER
+            return
+        collected_coins = self.coin_manager.collect_collided(player_hitbox)
+        if collected_coins > 0:
+            self.score += collected_coins
+            self.sounds.play_coin()
 
     def draw_menu(self) -> None:
         title_text = self.font.render("Runner Game", True, "white")
@@ -186,23 +156,15 @@ class Game:
 
     def draw(self) -> None:
         self.background.draw(self.screen)
-
         if self.state == STATE_MENU:
             self.draw_menu()
             return
-
-        for coin in self.coins:
-            coin.draw(self.screen)
-
-        for obstacle in self.obstacles:
-            obstacle.draw(self.screen)
-
+        self.coin_manager.draw(self.screen)
+        self.obstacle_manager.draw(self.screen)
         self.player.draw(self.screen)
         self.draw_score()
-
         if self.state == STATE_PAUSE:
             self.draw_pause()
-
         if self.state == STATE_GAME_OVER:
             self.draw_game_over()
 
@@ -255,6 +217,7 @@ class Game:
 
     def reset(self) -> None:
         self.player.reset()
-        self.arrange_objects()
+        self.obstacle_manager.reset()
+        self.coin_manager.reset()
         self.score = 0
         self.speed_multiplier = 1.0
