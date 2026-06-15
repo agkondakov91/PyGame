@@ -20,3 +20,6 @@ line-length = 88
 [tool.ruff.lint]
 select = ["E", "W", "F", "N", "I"]
 ignore = ["E501"]
+
+[tool.ruff.format]
+quote-style = "single"
