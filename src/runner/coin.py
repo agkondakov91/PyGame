@@ -14,7 +14,7 @@ from src.runner.constants import (
 
 class Coin:
     def __init__(self) -> None:
-        self.image = load_image_with_size("coin.png", COIN_SIZE)
+        self.image = load_image_with_size('coin.png', COIN_SIZE)
         self.rect = self.image.get_rect()
 
     def reset(self, x: int) -> None:

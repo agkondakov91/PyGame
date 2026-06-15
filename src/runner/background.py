@@ -6,7 +6,7 @@ from src.runner.constants import BACKGROUND_SPEED, WINDOW_WIDTH
 
 class Background:
     def __init__(self):
-        self.image = load_background("background.png")
+        self.image = load_background('background.png')
         self.x = 0
 
     def update(self, speed_multiplier: float = 1.0) -> None:

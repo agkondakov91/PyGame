@@ -5,8 +5,8 @@ import pygame
 from src.runner.constants import WINDOW_HEIGHT, WINDOW_WIDTH
 
 BASE_DIR = Path(__file__).resolve().parents[2]
-IMAGES_DIR = BASE_DIR / "assets" / "images"
-SOUNDS_DIR = BASE_DIR / "assets" / "sounds"
+IMAGES_DIR = BASE_DIR / 'assets' / 'images'
+SOUNDS_DIR = BASE_DIR / 'assets' / 'sounds'
 
 
 def load_image(file_name: str, scale: int = 1) -> pygame.Surface:

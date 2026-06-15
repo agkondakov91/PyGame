@@ -33,7 +33,7 @@ class BaseObjectManager:
         self.reset()
 
     def create_object(self) -> ManagedObject:
-        raise NotImplementedError("Subclasses must implement create_object()")
+        raise NotImplementedError('Subclasses must implement create_object()')
 
     def reset(self) -> None:
         self.spawn_manager.reset()

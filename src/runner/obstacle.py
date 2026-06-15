@@ -11,7 +11,7 @@ from src.runner.constants import (
 
 class Obstacle:
     def __init__(self) -> None:
-        self.image = load_image_with_size("obstacle.png", OBSTACLE_SIZE)
+        self.image = load_image_with_size('obstacle.png', OBSTACLE_SIZE)
         self.rect = self.image.get_rect()
 
     def reset(self, x: int) -> None:

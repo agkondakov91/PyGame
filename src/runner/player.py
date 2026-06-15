@@ -19,7 +19,7 @@ class Player:
 
     def load_images(self) -> list[pygame.Surface]:
         file_names = [
-            f"player_right_{number}.png"
+            f'player_right_{number}.png'
             for number in range(1, const.ANIMATION_FRAMES_COUNT + 1)
         ]
 
