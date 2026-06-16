@@ -137,7 +137,10 @@ class Game:
 
         if self.state == STATE_GAME_OVER:
             self.ui.draw_game_over(
-                screen=self.screen, score=self.score, best_score=self.best_score
+                screen=self.screen,
+                score=self.score,
+                best_score=self.best_score,
+                best_speed=f'{self.speed_multiplier:.1f}',
             )
 
     def reset(self) -> None:

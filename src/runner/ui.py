@@ -72,7 +72,7 @@ class UIManager:
         screen.blit(continue_text, continue_rect)
 
     def draw_game_over(
-        self, screen: pygame.Surface, score: int, best_score: int
+        self, screen: pygame.Surface, score: int, best_score: int, best_speed: str
     ) -> None:
         game_over_text = self.font.render('Game Over', True, 'white')
         game_over_rect = game_over_text.get_rect(
@@ -90,21 +90,31 @@ class UIManager:
             'white',
         )
         best_rect = best_text.get_rect(
-            center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 + 20),
+            center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 + 10),
+        )
+
+        best_speed_text = self.small_font.render(
+            f'Best Speed: {best_speed}',
+            True,
+            'white',
+        )
+        best_speed_rect = best_speed_text.get_rect(
+            center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 + 40),
         )
 
         restart_text = self.small_font.render('Press R to restart', True, 'white')
         restart_rect = restart_text.get_rect(
-            center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 + 70),
+            center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 + 80),
         )
 
         menu_text = self.small_font.render('Press Esc to menu', True, 'white')
         menu_rect = menu_text.get_rect(
-            center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 + 115),
+            center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 + 120),
         )
 
         screen.blit(game_over_text, game_over_rect)
         screen.blit(score_text, score_rect)
         screen.blit(best_text, best_rect)
+        screen.blit(best_speed_text, best_speed_rect)
         screen.blit(restart_text, restart_rect)
         screen.blit(menu_text, menu_rect)
