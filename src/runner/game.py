@@ -1,18 +1,11 @@
 import pygame
 
 from src.runner.background import Background
-from src.runner.constants import (
-    FPS,
-    STATE_GAME_OVER,
-    STATE_MENU,
-    STATE_PAUSE,
-    STATE_PLAYING,
-    WINDOW_HEIGHT,
-    WINDOW_WIDTH,
-)
+from src.runner.constants import FPS, WINDOW_HEIGHT, WINDOW_WIDTH
 from src.runner.managers.coin_manager import CoinManager
 from src.runner.managers.obstacle_manager import ObstacleManager
 from src.runner.player import Player
+from src.runner.session import GameSession
 from src.runner.sound import SoundManager
 from src.runner.ui import UIManager
 
@@ -26,10 +19,9 @@ class Game:
 
         self.clock = pygame.time.Clock()
 
-        self.speed_multiplier = 1.0
-
         self.background = Background()
         self.player = Player()
+
         self.obstacle_manager = ObstacleManager(count=5)
         self.coin_manager = CoinManager(count=4)
 
@@ -38,16 +30,14 @@ class Game:
         self.sounds = SoundManager()
         self.sounds.play_music()
 
-        self.score = 0
-        self.best_score = 0
-        self.state = STATE_MENU
+        self.session = GameSession()
         self.running = True
 
     def run(self) -> None:
         while self.running:
             self.handle_events()
 
-            if self.state == STATE_PLAYING:
+            if self.session.is_playing():
                 self.update()
 
             self.draw()
@@ -65,58 +55,58 @@ class Game:
                 self.handle_keydown(event.key)
 
     def handle_keydown(self, key: int) -> None:
-        if self.state == STATE_MENU:
+        if self.session.is_menu():
             if key in (pygame.K_RETURN, pygame.K_SPACE):
                 self.reset()
-                self.state = STATE_PLAYING
+                self.session.start_game()
 
-        elif self.state == STATE_PLAYING:
+        elif self.session.is_playing():
             if key == pygame.K_p:
-                self.state = STATE_PAUSE
+                self.session.pause()
             if key in (pygame.K_UP, pygame.K_w, pygame.K_SPACE):
                 if self.player.jump():
                     self.sounds.play_jump()
 
-        elif self.state == STATE_PAUSE:
+        elif self.session.is_paused():
             if key == pygame.K_p:
-                self.state = STATE_PLAYING
+                self.session.resume()
 
-        elif self.state == STATE_GAME_OVER:
+        elif self.session.is_game_over():
             if key == pygame.K_r:
                 self.reset()
-                self.state = STATE_PLAYING
+                self.session.start_game()
 
             if key == pygame.K_ESCAPE:
-                self.state = STATE_MENU
+                self.session.go_to_menu()
 
     def update(self) -> None:
-        self.speed_multiplier += 0.0003
-        self.background.update(self.speed_multiplier)
-        self.player.update()
-        self.obstacle_manager.update(self.speed_multiplier)
-        self.coin_manager.update(self.speed_multiplier)
-        self.check_collisions()
+        self.session.increase_speed()
 
-    def update_best_score(self) -> None:
-        if self.score > self.best_score:
-            self.best_score = self.score
+        self.background.update(self.session.speed_multiplier)
+        self.player.update()
+        self.obstacle_manager.update(self.session.speed_multiplier)
+        self.coin_manager.update(self.session.speed_multiplier)
+
+        self.check_collisions()
 
     def check_collisions(self) -> None:
         player_hitbox = self.player.get_hitbox()
+
         if self.obstacle_manager.has_collision_with(player_hitbox):
             self.sounds.play_hit()
-            self.update_best_score()
-            self.state = STATE_GAME_OVER
+            self.session.finish_game()
             return
+
         collected_coins = self.coin_manager.collect_collided(player_hitbox)
+
         if collected_coins > 0:
-            self.score += collected_coins
+            self.session.add_score(collected_coins)
             self.sounds.play_coin()
 
     def draw(self) -> None:
         self.background.draw(self.screen)
 
-        if self.state == STATE_MENU:
+        if self.session.is_menu():
             self.ui.draw_menu(self.screen)
             return
 
@@ -127,25 +117,23 @@ class Game:
 
         self.ui.draw_score(
             screen=self.screen,
-            score=self.score,
-            best_score=self.best_score,
-            speed_multiplier=self.speed_multiplier,
+            score=self.session.score,
+            best_score=self.session.best_score,
+            speed_multiplier=self.session.speed_multiplier,
         )
 
-        if self.state == STATE_PAUSE:
+        if self.session.is_paused():
             self.ui.draw_pause(self.screen)
 
-        if self.state == STATE_GAME_OVER:
+        if self.session.is_game_over():
             self.ui.draw_game_over(
                 screen=self.screen,
-                score=self.score,
-                best_score=self.best_score,
-                best_speed=f'{self.speed_multiplier:.1f}',
+                score=self.session.score,
+                best_score=self.session.best_score,
+                best_speed=f'{self.session.speed_multiplier:.1f}',
             )
 
     def reset(self) -> None:
         self.player.reset()
         self.obstacle_manager.reset()
         self.coin_manager.reset()
-        self.score = 0
-        self.speed_multiplier = 1.0
